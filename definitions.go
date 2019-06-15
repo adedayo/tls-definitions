@@ -470,8 +470,7 @@ var (
 	//AllALPNProtos Application Layer Protocol Negotiation. See defined list at https://tools.ietf.org/html/rfc7301#section-6
 	AllALPNProtos = []string{"spdy/3", "spdy/2", "spdy/1", "http/1.1"}
 
-	
-	//AEADProtocols are TLS protocols that are capable of Authenticated Encruption with Associated Data
+	//AEADProtocols are TLS protocols that are capable of Authenticated Encryption with Associated Data
 	AEADProtocols = []uint16{tls.VersionTLS12, tls.VersionTLS13}
 )
 
