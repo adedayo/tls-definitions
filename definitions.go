@@ -472,6 +472,27 @@ var (
 
 	//AEADProtocols are TLS protocols that are capable of Authenticated Encryption with Associated Data
 	AEADProtocols = []uint16{tls.VersionTLS12, tls.VersionTLS13}
+
+	//SignatureSchemes os the string representation of signature schemes
+	SignatureSchemes = map[uint16]string{
+		0x0401: "PKCS1WithSHA256",
+		0x0501: "PKCS1WithSHA384",
+		0x0601: "PKCS1WithSHA512",
+
+		// RSASSA-PSS algorithms with public key OID rsaEncryption.
+		0x0804: "PSSWithSHA256",
+		0x0805: "PSSWithSHA384",
+		0x0806: "PSSWithSHA512",
+
+		// ECDSA algorithms. Only constrained to a specific curve in TLS 1.3.
+		0x0403: "ECDSAWithP256AndSHA256",
+		0x0503: "ECDSAWithP384AndSHA384",
+		0x0603: "ECDSAWithP521AndSHA512",
+
+		// Legacy signature and hash algorithms for TLS 1.2.
+		0x0201: "PKCS1WithSHA1",
+		0x0203: "ECDSAWithSHA1",
+	}
 )
 
 func init() {
