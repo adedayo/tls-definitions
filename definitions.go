@@ -501,6 +501,7 @@ func init() {
 }
 
 // getAllCipherSuiteIDs returns all the cipher suite numerical values
+//TODO - consider returning the ciphersuites in order of popularity on servers
 func getAllCipherSuiteIDs() []uint16 {
 	keys := []uint16{}
 	for k := range CipherSuiteMap {
