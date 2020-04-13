@@ -442,12 +442,15 @@ var (
 		0xD005: "TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256",
 	}
 
+	//CipherSuiteNameToID is a mapping of ciphersuite name to corresponding ID
+	CipherSuiteNameToID = map[string]uint16{}
+
 	//TLS13Ciphers are newly-introduced IANA ciphers for TLS v1.3
 	TLS13Ciphers = []uint16{
 		0x1301, 0x1302, 0x1303, 0x1304, 0x1305,
 	}
 	// AllCipherSuites is the numerical values of IANA ciphersuites
-	// with the exception of TLS_FALLBACK_SCSV (0x5600)
+	// with the exception of TLS_FALLBACK_SCSV (0x5600) and TLS_NULL_WITH_NULL_NULL (0x0000)
 	AllCipherSuites []uint16
 
 	//VersionSSL20 is the protocol code of SSL v2.0
@@ -501,14 +504,28 @@ func init() {
 }
 
 // getAllCipherSuiteIDs returns all the cipher suite numerical values
-//TODO - consider returning the ciphersuites in order of popularity on servers
+//it starts with the most popular ciphers according to Censys in April 2020
 func getAllCipherSuiteIDs() []uint16 {
 	keys := []uint16{}
+	//make reverse name -> ID mapping first
+	for k, v := range CipherSuiteMap {
+		CipherSuiteNameToID[v] = k
+	}
+
+	added := make(map[uint16]bool)
+	for _, name := range cipherPopularity {
+		id := CipherSuiteNameToID[name]
+		keys = append(keys, id)
+		added[id] = true
+	}
+
 	for k := range CipherSuiteMap {
-		if k != 0x5600 { // exclude TLS_FALLBACK_SCSV
+		if _, present := added[k]; !present && k != 0x5600 && k != 0x0000 {
+			//exclude TLS_FALLBACK_SCSV and TLS_NULL_WITH_NULL_NULL
 			keys = append(keys, k)
 		}
 	}
+
 	return keys
 }
 
@@ -518,4 +535,34 @@ func getAllSupportedGroupIDs() []uint16 {
 		ids = append(ids, id)
 	}
 	return ids
+}
+
+//a popularity ordering of supported ciphersuite on port 443 of HTTP servers
+//according to Censys on 13 April 2020
+var cipherPopularity = []string{
+	"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+	"TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+	"TLS_RSA_WITH_AES_256_CBC_SHA",
+	"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+	"TLS_RSA_WITH_AES_128_GCM_SHA256",
+	"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+	"TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+	"TLS_RSA_WITH_AES_128_CBC_SHA",
+	"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+	"TLS_RSA_WITH_RC4_128_SHA",
+	"TLS_RSA_WITH_RC4_128_MD5",
+	"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+	"TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+	"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+	"TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+	"TLS_ECDHE_RSA_WITH_RC4_128_SHA",
+	"TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+	"TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+	"TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+	"TLS_ECDH_ANON_WITH_NULL_SHA",
+	"TLS_DH_RSA_WITH_AES_128_CBC_SHA",
+	"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+	"TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
+	"TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+	"TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
 }
