@@ -95,7 +95,7 @@ var (
 	}
 
 	//AllSupportedGroups are IANA-defined supported groups. Please see https://www.iana.org/assignments/tls-parameters/tls-parameters.xml#tls-parameters-8
-	AllSupportedGroups []uint16
+	AllSupportedGroups []uint16 = getAllSupportedGroupIDs()
 
 	// CipherSuiteMap - list of ciphersuites based on: http://www.iana.org/assignments/tls-parameters/tls-parameters.xml
 	// For CSV: https://www.iana.org/assignments/tls-parameters/tls-parameters-4.csv
@@ -451,7 +451,7 @@ var (
 	}
 	// AllCipherSuites is the numerical values of IANA ciphersuites
 	// with the exception of TLS_FALLBACK_SCSV (0x5600) and TLS_NULL_WITH_NULL_NULL (0x0000)
-	AllCipherSuites []uint16
+	AllCipherSuites []uint16 = getAllCipherSuiteIDs()
 
 	//VersionSSL20 is the protocol code of SSL v2.0
 	VersionSSL20 uint16 = 0x0002
@@ -497,11 +497,6 @@ var (
 		0x0203: "ECDSAWithSHA1",
 	}
 )
-
-func init() {
-	AllCipherSuites = getAllCipherSuiteIDs()
-	AllSupportedGroups = getAllSupportedGroupIDs()
-}
 
 // getAllCipherSuiteIDs returns all the cipher suite numerical values
 //it starts with the most popular ciphers according to Censys in April 2020
